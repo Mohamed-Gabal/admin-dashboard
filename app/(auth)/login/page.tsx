@@ -1,38 +1,47 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import api from '@/lib/axios'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+const loginSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+})
+
+type LoginForm = z.infer<typeof loginSchema>
 
 const LoginPage = () => {
-
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({ username: '', password: '' })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+  })
 
+  const onSubmit = async (data: LoginForm) => {
     try {
       const res = await api.post('/auth/login', {
-        username: form.username,
-        password: form.password,
+        username: data.username,
+        password: data.password,
         expiresInMins: 60,
       })
 
-      localStorage.setItem('token', res.data.accessToken)
-      localStorage.setItem('user', JSON.stringify(res.data))
+    document.cookie = `token=${res.data.accessToken}; path=/`
+    localStorage.setItem('user', JSON.stringify(res.data))
 
       toast.success('Welcome back! 👋')
       router.push('/dashboard')
 
     } catch {
       toast.error('Invalid username or password')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -48,22 +57,27 @@ const LoginPage = () => {
 
         {/* Card */}
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-8">
-          
-          <form onSubmit={handleSubmit} className="space-y-5">
-            
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
             {/* Username */}
             <div>
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">
                 Username
               </label>
               <input
+                {...register('username')}
                 type="text"
                 placeholder="Enter your username"
-                value={form.username}
-                onChange={(e) => setForm({ ...form, username: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-sm outline-none focus:border-blue-500 transition-colors"
-                required
+                className={`w-full px-4 py-2.5 rounded-lg border bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-sm outline-none transition-colors
+                  ${errors.username
+                    ? 'border-red-400 focus:border-red-500'
+                    : 'border-gray-200 dark:border-gray-700 focus:border-blue-500'
+                  }`}
               />
+              {errors.username && (
+                <p className="text-red-500 text-xs mt-1">{errors.username.message}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -72,22 +86,27 @@ const LoginPage = () => {
                 Password
               </label>
               <input
+                {...register('password')}
                 type="password"
                 placeholder="Enter your password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-sm outline-none focus:border-blue-500 transition-colors"
-                required
+                className={`w-full px-4 py-2.5 rounded-lg border bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-sm outline-none transition-colors
+                  ${errors.password
+                    ? 'border-red-400 focus:border-red-500'
+                    : 'border-gray-200 dark:border-gray-700 focus:border-blue-500'
+                  }`}
               />
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+              )}
             </div>
 
             {/* Submit */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting}
               className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {isSubmitting ? 'Signing in...' : 'Sign in'}
             </button>
 
           </form>
