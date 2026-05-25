@@ -1,8 +1,11 @@
 'use client'
 
-import { Bell, Search, Moon, Sun, Menu } from 'lucide-react'
+import { Moon, Sun, Menu } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
+import GlobalSearch from '@/components/shared/GlobalSearch'
+import NotificationsDropdown from '@/components/shared/NotificationsDropdown'
+import useCurrentUser from '@/hooks/useCurrentUser'
 
 interface NavbarProps {
   onMenuClick: () => void
@@ -11,10 +14,15 @@ interface NavbarProps {
 const Navbar = ({ onMenuClick }: NavbarProps) => {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const user = useCurrentUser()
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  const initials = user
+    ? `${user.firstName[0]}${user.lastName[0]}`
+    : 'A'
 
   return (
     <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 lg:px-6">
@@ -26,20 +34,11 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
         >
           <Menu size={20} />
         </button>
-
-        <div className="hidden sm:flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2 w-48 lg:w-72">
-          <Search size={16} className="text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="bg-transparent text-sm outline-none text-gray-600 dark:text-gray-300 w-full"
-          />
-        </div>
+        <GlobalSearch />
       </div>
 
       <div className="flex items-center gap-2">
 
-        {/* Dark/Light Toggle */}
         {mounted && (
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -49,17 +48,23 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
           </button>
         )}
 
-        <button className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors">
-          <Bell size={18} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-        </button>
+        <NotificationsDropdown />
 
-        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold cursor-pointer">
-          A
-        </div>
+        {/* Avatar */}
+        {user?.image ? (
+          <img
+            src={user.image}
+            alt={user.firstName}
+            className="w-8 h-8 rounded-full object-cover cursor-pointer"
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold cursor-pointer">
+            {initials}
+          </div>
+        )}
 
       </div>
     </header>
   )
 }
-export default Navbar
+export default Navbar;

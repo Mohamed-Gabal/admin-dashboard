@@ -1,9 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { navItems } from '@/constant/navigation'
-import { X } from 'lucide-react'
+import { X, LogOut } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { useState } from 'react'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import useCurrentUser from '@/hooks/useCurrentUser'
 
 interface SidebarProps {
   isOpen: boolean
@@ -12,6 +16,16 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const pathname = usePathname()
+  const router = useRouter()
+  const [showLogout, setShowLogout] = useState(false)
+  const user = useCurrentUser()
+
+  const handleLogout = () => {
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    localStorage.clear()
+    toast.success('Logged out!')
+    router.push('/login')
+  }
 
   return (
     <>
@@ -72,19 +86,43 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
         {/* User Info */}
         <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
-              A
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {user?.image ? (
+                <img src={user.image} alt={user.firstName} className="w-8 h-8 rounded-full object-cover" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                  {user ? `${user.firstName[0]}${user.lastName[0]}` : 'A'}
+                </div>
+              )}
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  {user ? `${user.firstName} ${user.lastName}` : 'Admin'}
+                </p>
+                <p className="text-xs text-gray-400">{user?.email ?? 'admin@saas.com'}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Admin</p>
-              <p className="text-xs text-gray-400">abogabal627@gmail.com</p>
-            </div>
+            <button
+              onClick={() => setShowLogout(true)}
+              className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors"
+            >
+              <LogOut size={16} />
+            </button>
           </div>
         </div>
 
       </aside>
+
+      <ConfirmDialog
+        isOpen={showLogout}
+        title="Sign Out"
+        message="Are you sure you want to sign out?"
+        confirmLabel="Sign Out"
+        cancelLabel="Cancel"
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogout(false)}
+      />
     </>
   )
 }
-export default Sidebar
+export default Sidebar;

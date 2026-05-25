@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Gabal Admin Dashboard
 
-## Getting Started
+A modern, professional SaaS Admin Dashboard built with Next.js 16, React Query, and Tailwind CSS.
 
-First, run the development server:
+## ✨ Features
+
+- 🔐 **Authentication** — Login & Register with validation
+- 📊 **Analytics** — Charts, stats, and performance tracking
+- 👥 **User Management** — Table with search and pagination
+- 💳 **Subscriptions** — Plan management with billing toggle
+- 📋 **Reports** — Revenue charts and top users
+- 🔔 **Notifications** — Real-time notification system
+- ⚙️ **Settings** — Profile, password, and appearance
+- 🛡️ **Roles & Permissions** — Role-based access control
+- 🌙 **Dark/Light Mode** — System theme support
+- 📱 **Fully Responsive** — Mobile, tablet, and desktop
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| Next.js 16 | Framework |
+| React Query | Data fetching & caching |
+| Tailwind CSS 4 | Styling |
+| React Hook Form | Form management |
+| Zod | Validation |
+| Recharts | Data visualization |
+| Lucide React | Icons |
+| next-themes | Dark/Light mode |
+
+## 📁 Project Structure
+
+src/
+├── app/
+│   ├── (auth)/login & register
+│   └── dashboard/
+│       ├── analytics
+│       ├── users
+│       ├── subscriptions
+│       ├── plans
+│       ├── reports
+│       ├── notifications
+│       ├── settings
+│       └── roles
+├── components/
+│   ├── layout/
+│   ├── shared/
+│   └── ui/
+├── constant/
+├── lib/
+├── providers/
+├── services/
+├── types/
+└── utils/
+
+## 🚀 Getting Started
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔑 Test Credentials
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Username: emilys
+Password: emilyspass
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📡 API
 
-## Learn More
+This project uses [DummyJSON](https://dummyjson.com) as a mock API.
 
-To learn more about Next.js, take a look at the following resources:
+## 👨‍💻 Author
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Mohamed Gabal** — [GitHub](https://github.com/Mohamed-Gabal)
