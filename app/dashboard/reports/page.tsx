@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import PageHeader from '@/components/shared/PageHeader'
 import api from '@/lib/axios'
 import Skeleton from '@/components/ui/Skeleton'
+import ErrorState from '@/components/ui/ErrorState'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend
@@ -27,13 +28,22 @@ const planData = [
 const COLORS = ['#3b82f6', '#8b5cf6', '#10b981']
 
 const ReportsPage = () => {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['reports-users'],
     queryFn: async () => {
       const res = await api.get('/users?limit=5')
       return res.data
     },
   })
+
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Reports" description="Overview of your business performance" />
+        <ErrorState message="Failed to load reports data" onRetry={refetch} />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

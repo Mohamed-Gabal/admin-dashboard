@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import PageHeader from '@/components/shared/PageHeader'
 import StatsCard from '@/components/ui/StatsCard'
+import ErrorState from '@/components/ui/ErrorState'
 import api from '@/lib/axios'
 import { Users, TrendingUp, ShoppingCart, DollarSign } from 'lucide-react'
 import {
@@ -30,13 +31,22 @@ const revenueData = [
 ]
 
 const AnalyticsPage = () => {
-  const { data } = useQuery({
+  const { data, isError, refetch } = useQuery({
     queryKey: ['analytics-users'],
     queryFn: async () => {
       const res = await api.get('/users?limit=1')
       return res.data
     },
   })
+
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Analytics" description="Track your business performance" />
+        <ErrorState message="Failed to load analytics data" onRetry={refetch} />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
